@@ -302,7 +302,10 @@ Window.prototype.bind = function() {
 Window.prototype.focus = function() {
   // Restack
   var parent = this.element.parentNode;
-  if (parent) {
+  if (parent && this.element != parent.lastChild) {
+    if (Terminal.focus) {
+      Terminal.focus.blur();
+    }
     parent.removeChild(this.element);
     parent.appendChild(this.element);
   }
@@ -637,7 +640,9 @@ Tab.prototype.write = function(data) {
 Tab.prototype._focus = Tab.prototype.focus;
 
 Tab.prototype.focus = function() {
-  if (Terminal.focus === this) return;
+  var prevFocus = Terminal.focus;
+  this._focus();
+  if (prevFocus === this) return;
 
   var win = this.window;
 
@@ -661,7 +666,7 @@ Tab.prototype.focus = function() {
 
   this.handleTitle(this.title);
 
-  this._focus();
+  // this._focus();
 
   win.focus();
 
